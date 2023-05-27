@@ -36,6 +36,7 @@ func weightedGraphScenarios() {
 	log.Println(wg.Dijkstra(one, five))
 	log.Println(wg.BellmanFord(one, five))
 	log.Println(wg.FloydWarshall(one, five))
+	log.Println(wg.Prim())
 }
 
 func main() {

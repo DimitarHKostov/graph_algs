@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"log"
 	"math"
 )
 
@@ -138,4 +139,38 @@ func (g *WeightedGraph) FloydWarshall(from, to GraphElement) int {
 	}
 
 	return distanceBetween[from][to]
+}
+
+func (g *WeightedGraph) filterGraphElementsWithNotVisitedNeighbors(visited map[GraphElement]bool, nodesSubset []GraphElement) []GraphElement {
+	return nodesSubset
+}
+
+func (g *WeightedGraph) Prim() int {
+	start := GetRandomGraphElement(g.nodes)
+	visited := make(map[GraphElement]bool)
+	visited[start] = true
+	total := 0
+
+	for {
+		if len(visited) == len(g.nodes) {
+			break
+		}
+
+		minWeight := math.MaxInt64
+		var minWeightTo GraphElement
+
+		for node := range visited {
+			for neighbor, edgeWeight := range g.nodes[node] {
+				if !visited[neighbor] && edgeWeight < minWeight {
+					minWeight = edgeWeight
+					minWeightTo = neighbor
+				}
+			}
+		}
+
+		visited[minWeightTo] = true
+		total += minWeight
+	}
+
+	return total
 }
