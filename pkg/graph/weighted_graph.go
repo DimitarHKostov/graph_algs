@@ -31,6 +31,7 @@ func (g *WeightedGraph) GetWeight(a, b GraphElement) int {
 	return g.nodes[a][b]
 }
 
+//todo: optimize using priority queue at some point
 func (g *WeightedGraph) Dijkstra(from, to GraphElement) int {
 	distanceTo := make(map[GraphElement]int)
 	unvisited := make(map[GraphElement]bool)
