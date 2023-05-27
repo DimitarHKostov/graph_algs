@@ -98,3 +98,44 @@ func (g *WeightedGraph) BellmanFord(from, to GraphElement) int {
 
 	return distanceTo[to]
 }
+
+func (g *WeightedGraph) FloydWarshall(from, to GraphElement) int {
+	distanceBetween := make(map[GraphElement]map[GraphElement]int)
+
+	for node := range g.nodes {
+		if _, ok := distanceBetween[node]; !ok {
+			distanceBetween[node] = make(map[GraphElement]int)
+		}
+	}
+
+	for u := range distanceBetween {
+		distanceBetween[u][u] = 0
+	}
+
+	for node := range g.nodes {
+		for neighbor, edgeWeight := range g.nodes[node] {
+			distanceBetween[node][neighbor] = edgeWeight
+		}
+	}
+
+	for i := range g.nodes {
+		for j := range g.nodes {
+			if i != j && distanceBetween[i][j] == 0 {
+				distanceBetween[i][j] = math.MaxInt64
+				distanceBetween[j][i] = math.MaxInt64
+			}
+		}
+	}
+
+	for i := range distanceBetween {
+		for j := range distanceBetween {
+			for k := range distanceBetween {
+				if newDist := distanceBetween[i][k] + distanceBetween[k][j]; newDist < distanceBetween[i][j] {
+					distanceBetween[i][j] = newDist
+				}
+			}
+		}
+	}
+
+	return distanceBetween[from][to]
+}
