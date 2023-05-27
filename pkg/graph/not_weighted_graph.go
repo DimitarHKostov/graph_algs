@@ -28,10 +28,6 @@ func (g *NotWeightedGraph) AddEdge(a, b GraphElement) {
 	g.nodes[b][a] = true
 }
 
-func (g *NotWeightedGraph) GetEdgesFrom(a GraphElement) map[GraphElement]bool {
-	return g.nodes[a]
-}
-
 func (g *NotWeightedGraph) BFS(a GraphElement) {
 	visited := make(map[GraphElement]bool)
 	queue := queue.NewQueue()

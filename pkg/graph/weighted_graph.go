@@ -27,10 +27,6 @@ func (g *WeightedGraph) AddEdge(a, b GraphElement, weight int) {
 	g.nodes[b][a] = weight
 }
 
-func (g *WeightedGraph) GetWeight(a, b GraphElement) int {
-	return g.nodes[a][b]
-}
-
 // todo: optimize using priority queue at some point
 func (g *WeightedGraph) Dijkstra(from, to GraphElement) int {
 	distanceTo := make(map[GraphElement]int)
@@ -140,36 +136,36 @@ func (g *WeightedGraph) FloydWarshall(from, to GraphElement) int {
 	return distanceBetween[from][to]
 }
 
-func (g *WeightedGraph) filterGraphElementsWithNotVisitedNeighbors(visited map[GraphElement]bool, nodesSubset []GraphElement) []GraphElement {
-	return nodesSubset
-}
-
 func (g *WeightedGraph) Prim() int {
 	start := GetRandomGraphElement(g.nodes)
-	visited := make(map[GraphElement]bool)
-	visited[start] = true
+	mst := make(map[GraphElement]bool)
+	mst[start] = true
 	total := 0
 
 	for {
-		if len(visited) == len(g.nodes) {
+		if len(mst) == len(g.nodes) {
 			break
 		}
 
 		minWeight := math.MaxInt64
 		var minWeightTo GraphElement
 
-		for node := range visited {
+		for node := range mst {
 			for neighbor, edgeWeight := range g.nodes[node] {
-				if !visited[neighbor] && edgeWeight < minWeight {
+				if !mst[neighbor] && edgeWeight < minWeight {
 					minWeight = edgeWeight
 					minWeightTo = neighbor
 				}
 			}
 		}
 
-		visited[minWeightTo] = true
+		mst[minWeightTo] = true
 		total += minWeight
 	}
 
 	return total
+}
+
+func (g *WeightedGraph) Kruskal() int {
+	return 0
 }
