@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"log"
 	"math"
 )
 
@@ -128,9 +127,9 @@ func (g *WeightedGraph) FloydWarshall(from, to GraphElement) int {
 		}
 	}
 
-	for i := range distanceBetween {
-		for j := range distanceBetween {
-			for k := range distanceBetween {
+	for i := range g.nodes {
+		for j := range g.nodes {
+			for k := range g.nodes {
 				if newDist := distanceBetween[i][k] + distanceBetween[k][j]; newDist < distanceBetween[i][j] {
 					distanceBetween[i][j] = newDist
 				}
