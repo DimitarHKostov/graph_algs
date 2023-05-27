@@ -18,6 +18,10 @@ func NewStack() *Stack {
 	return stack
 }
 
+func (s *Stack) IsEmpty() bool {
+	return s.linkedList.GetEnd().Id == 0
+}
+
 func (s *Stack) Add(element int) {
 	s.linkedList.AddEnd(&element)
 }
