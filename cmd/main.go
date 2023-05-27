@@ -1,42 +1,42 @@
 package main
 
 import (
-	"graph_algs/pkg/linked_list"
-	"graph_algs/pkg/node"
+	"graph_algs/pkg/graph"
 	"log"
 )
 
-func getNodes() map[node.Node]map[node.Node]bool {
-	// todo refactor this
-	nodeOne := &node.Node{Id: 1}
-	nodeTwo := &node.Node{Id: 2}
-	nodeThree := &node.Node{Id: 3}
-	nodeFour := &node.Node{Id: 4}
-	nodeFive := &node.Node{Id: 5}
+var (
+	one   = *graph.ProduceGraphElement(1)
+	two   = *graph.ProduceGraphElement(2)
+	three = *graph.ProduceGraphElement(3)
+	four  = *graph.ProduceGraphElement(4)
+	five  = *graph.ProduceGraphElement(5)
+)
 
-	// refactor this later
-	nodes := make(map[node.Node]map[node.Node]bool)
-	nodes[*nodeOne] = make(map[node.Node]bool)
-	nodes[*nodeTwo] = make(map[node.Node]bool)
-	nodes[*nodeThree] = make(map[node.Node]bool)
-	nodes[*nodeFour] = make(map[node.Node]bool)
-	nodes[*nodeFive] = make(map[node.Node]bool)
+func notWeigtedGraphScenarios() {
+	g := graph.NewNotWeightedGraph()
 
-	nodes[*nodeOne][*nodeTwo] = true
-	nodes[*nodeOne][*nodeThree] = true
-	nodes[*nodeTwo][*nodeFour] = true
-	nodes[*nodeFour][*nodeFive] = true
+	g.AddEdge(one, two)
+	g.AddEdge(one, three)
 
-	return nodes
+	g.BFS(one)
+	g.DFS(one)
+}
+
+func weightedGraphScenarios() {
+	wg := graph.NewWeightedGraph()
+
+	wg.AddEdge(one, two, 2)
+	wg.AddEdge(one, three, 1)
+	wg.AddEdge(two, three, 4)
+	wg.AddEdge(three, four, 2)
+	wg.AddEdge(three, five, 3)
+	wg.AddEdge(four, five, 5)
+
+	log.Println(wg.Dijkstra(one, one))
 }
 
 func main() {
-	// graph := graph.Graph{Nodes: getNodes()}
-
-	// graph.BFS()
-
-	ll := &linked_list.LinkedList{}
-	ll.AddFront(1)
-
-	log.Println(ll.GetFront().Id)
+	//notWeigtedGraphScenarios()
+	weightedGraphScenarios()
 }
