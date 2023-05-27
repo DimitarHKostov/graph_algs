@@ -31,7 +31,7 @@ func (g *WeightedGraph) GetWeight(a, b GraphElement) int {
 	return g.nodes[a][b]
 }
 
-//todo: optimize using priority queue at some point
+// todo: optimize using priority queue at some point
 func (g *WeightedGraph) Dijkstra(from, to GraphElement) int {
 	distanceTo := make(map[GraphElement]int)
 	unvisited := make(map[GraphElement]bool)
@@ -71,6 +71,30 @@ func (g *WeightedGraph) Dijkstra(from, to GraphElement) int {
 			}
 		}
 	}
+
+	return distanceTo[to]
+}
+
+func (g *WeightedGraph) BellmanFord(from, to GraphElement) int {
+	distanceTo := make(map[GraphElement]int)
+
+	for node := range g.nodes {
+		if node != from {
+			distanceTo[node] = math.MaxInt64
+		} else {
+			distanceTo[node] = 0
+		}
+	}
+
+	for node := range g.nodes {
+		for neighbor := range g.nodes[node] {
+			if newDist := distanceTo[node] + g.nodes[node][neighbor]; newDist < distanceTo[neighbor] {
+				distanceTo[neighbor] = newDist
+			}
+		}
+	}
+
+	//pass through all edges once more and if any gets relaxed => negative cycle
 
 	return distanceTo[to]
 }

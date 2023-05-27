@@ -33,7 +33,8 @@ func weightedGraphScenarios() {
 	wg.AddEdge(three, five, 3)
 	wg.AddEdge(four, five, 5)
 
-	log.Println(wg.Dijkstra(one, one))
+	log.Println(wg.Dijkstra(one, five))
+	log.Println(wg.BellmanFord(one, five))
 }
 
 func main() {
