@@ -4,18 +4,14 @@ import (
 	"graph_algs/pkg/linked_list"
 )
 
-const (
-	emptyStackMessage = "stack is empty"
-)
-
 type Stack struct {
 	linkedList linked_list.LinkedList
 }
 
 func NewStack() *Stack {
-	stack := &Stack{linkedList: linked_list.LinkedList{}}
+	linkedList := linked_list.NewLinkedList(nil, nil, 0)
 
-	return stack
+	return &Stack{linkedList: *linkedList}
 }
 
 func (s *Stack) IsEmpty() bool {

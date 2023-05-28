@@ -10,9 +10,7 @@ type NotWeightedGraph struct {
 }
 
 func NewNotWeightedGraph() *NotWeightedGraph {
-	graph := &NotWeightedGraph{nodes: make(map[GraphElement]map[GraphElement]bool)}
-
-	return graph
+	return &NotWeightedGraph{nodes: make(map[GraphElement]map[GraphElement]bool)}
 }
 
 func (g *NotWeightedGraph) AddEdge(a, b GraphElement) {

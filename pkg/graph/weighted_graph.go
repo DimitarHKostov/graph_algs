@@ -10,9 +10,7 @@ type WeightedGraph struct {
 }
 
 func NewWeightedGraph() *WeightedGraph {
-	graph := &WeightedGraph{nodes: make(map[GraphElement]map[GraphElement]int)}
-
-	return graph
+	return &WeightedGraph{nodes: make(map[GraphElement]map[GraphElement]int)}
 }
 
 func (g *WeightedGraph) AddEdge(a, b GraphElement, weight int) {
@@ -137,41 +135,51 @@ func (g *WeightedGraph) FloydWarshall(from, to GraphElement) int {
 	return distanceBetween[from][to]
 }
 
-func (g *WeightedGraph) Prim() int {
+func (g *WeightedGraph) Prim() (int, []GraphEdge) {
 	start := GetRandomGraphElement(g.nodes)
-	mst := make(map[GraphElement]bool)
-	mst[start] = true
+	mstVertices := make(map[GraphElement]bool)
+	mstVertices[start] = true
 	total := 0
+	mstEdges := make([]GraphEdge, 0)
 
 	for {
-		if len(mst) == len(g.nodes) {
+		if len(mstVertices) == len(g.nodes) {
 			break
 		}
 
 		minWeight := math.MaxInt64
 		var minWeightTo GraphElement
+		var minWeightFrom GraphElement
 
-		for node := range mst {
+		for node := range mstVertices {
 			for neighbor, edgeWeight := range g.nodes[node] {
-				if !mst[neighbor] && edgeWeight < minWeight {
+				if !mstVertices[neighbor] && edgeWeight < minWeight {
 					minWeight = edgeWeight
 					minWeightTo = neighbor
+					minWeightFrom = node
 				}
 			}
 		}
 
-		mst[minWeightTo] = true
+		mstVertices[minWeightTo] = true
 		total += minWeight
+		mstEdge := NewGraphEdge(minWeightFrom, minWeightTo, minWeight)
+		mstEdges = append(mstEdges, *mstEdge)
 	}
 
-	return total
+	return total, mstEdges
 }
 
 func (g *WeightedGraph) getVertices(nodes map[GraphElement]map[GraphElement]int) []GraphElement {
 	vertices := make([]GraphElement, 0)
+	verticesSet := make(map[GraphElement]bool)
 
 	for node := range nodes {
-		vertices = append(vertices, node)
+		if !verticesSet[node] {
+			verticesSet[node] = true
+			vertices = append(vertices, node)
+		}
+
 	}
 
 	return vertices
@@ -179,26 +187,26 @@ func (g *WeightedGraph) getVertices(nodes map[GraphElement]map[GraphElement]int)
 
 func (g *WeightedGraph) getEdges(nodes map[GraphElement]map[GraphElement]int) []GraphEdge {
 	edges := make([]GraphEdge, 0)
-	addedEdges := make(map[GraphElement]map[GraphElement]bool)
+	edgesSet := make(map[GraphElement]map[GraphElement]bool)
 
 	for node := range nodes {
-		addedEdges[node] = make(map[GraphElement]bool)
+		edgesSet[node] = make(map[GraphElement]bool)
 	}
 
 	for node, to := range nodes {
 		for neighbor, edgeWeight := range to {
 			add := true
 
-			ok1 := addedEdges[node][neighbor]
-			ok2 := addedEdges[neighbor][node]
+			ok1 := edgesSet[node][neighbor]
+			ok2 := edgesSet[neighbor][node]
 
 			if ok1 || ok2 {
 				add = false
 			}
 
 			if add {
-				addedEdges[node][neighbor] = true
-				addedEdges[neighbor][node] = true
+				edgesSet[node][neighbor] = true
+				edgesSet[neighbor][node] = true
 				edge := NewGraphEdge(node, neighbor, edgeWeight)
 				edges = append(edges, *edge)
 			}
@@ -228,27 +236,28 @@ func (ds *DisjointSet) Find(node GraphElement) GraphElement {
 	return ds.parent[node]
 }
 
-func (ds *DisjointSet) Union(node1, node2 GraphElement) {
-	root1 := ds.Find(node1)
-	root2 := ds.Find(node2)
+func (ds *DisjointSet) Union(first, second GraphElement) {
+	rootFirst := ds.Find(first)
+	rootSecond := ds.Find(second)
 
-	if root1 != root2 {
-		if ds.rank[root1].Less(ds.rank[root2]) {
-			ds.parent[root1] = root2
-		} else if ds.rank[root2].Less(ds.rank[root1]) {
-			ds.parent[root2] = root1
+	if rootFirst != rootSecond {
+		if ds.rank[rootFirst].Less(ds.rank[rootSecond]) {
+			ds.parent[rootFirst] = rootSecond
+		} else if ds.rank[rootSecond].Less(ds.rank[rootFirst]) {
+			ds.parent[rootSecond] = rootFirst
 		} else {
-			ds.parent[root2] = root1
-			ds.rank[root1] = root1
+			ds.parent[rootSecond] = rootFirst
+			ds.rank[rootFirst] = rootFirst
 		}
 	}
 }
 
-func (g *WeightedGraph) Kruskal() int {
+func (g *WeightedGraph) Kruskal() (int, []GraphEdge) {
 	edges := g.getEdges(g.nodes)
 	vertices := g.getVertices(g.nodes)
 	ds := NewDisjointSet()
 	total := 0
+	mstEdges := make([]GraphEdge, 0)
 
 	for _, vertex := range vertices {
 		ds.MakeSet(vertex)
@@ -264,9 +273,10 @@ func (g *WeightedGraph) Kruskal() int {
 
 		if srcRoot != destRoot {
 			total += edge.weight
+			mstEdges = append(mstEdges, edge)
 			ds.Union(srcRoot, destRoot)
 		}
 	}
 
-	return total
+	return total, mstEdges
 }

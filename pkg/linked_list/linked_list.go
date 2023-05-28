@@ -8,15 +8,19 @@ import (
 type LinkedList struct {
 	head *node.Node
 	end  *node.Node
-	size uint32
+	size int
 }
 
-func (ll *LinkedList) AddFront(element *int) {
+func NewLinkedList(head, end *node.Node, size int) *LinkedList {
+	return &LinkedList{head: head, end: end, size: size}
+}
+
+func (ll *LinkedList) AddFront(elementId *int) {
 	if ll.size == 0 {
-		ll.head = &node.Node{Id: *element}
+		ll.head = &node.Node{Id: *elementId}
 		ll.end = ll.head
 	} else {
-		newNode := &node.Node{Id: *element}
+		newNode := &node.Node{Id: *elementId}
 		newNode.Next = ll.head
 		ll.head.Prev = newNode
 		ll.head = newNode

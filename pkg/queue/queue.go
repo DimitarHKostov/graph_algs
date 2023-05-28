@@ -4,18 +4,14 @@ import (
 	"graph_algs/pkg/linked_list"
 )
 
-const (
-	emptyQueueError = "queue is empty"
-)
-
 type Queue struct {
 	linkedList linked_list.LinkedList
 }
 
 func NewQueue() *Queue {
-	queue := &Queue{linkedList: linked_list.LinkedList{}}
+	linkedList := linked_list.NewLinkedList(nil, nil, 0)
 
-	return queue
+	return &Queue{linkedList: *linkedList}
 }
 
 func (q *Queue) Push(element int) {

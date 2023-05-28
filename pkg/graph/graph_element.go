@@ -10,9 +10,7 @@ type GraphElement struct {
 }
 
 func ProduceGraphElement(id int) *GraphElement {
-	graphElement := &GraphElement{Id: id}
-
-	return graphElement
+	return &GraphElement{Id: id}
 }
 
 func GetRandomGraphElement(nodes map[GraphElement]map[GraphElement]int) GraphElement {
