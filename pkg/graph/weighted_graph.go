@@ -2,6 +2,7 @@ package graph
 
 import (
 	"math"
+	"sort"
 )
 
 type WeightedGraph struct {
@@ -166,6 +167,106 @@ func (g *WeightedGraph) Prim() int {
 	return total
 }
 
+func (g *WeightedGraph) getVertices(nodes map[GraphElement]map[GraphElement]int) []GraphElement {
+	vertices := make([]GraphElement, 0)
+
+	for node := range nodes {
+		vertices = append(vertices, node)
+	}
+
+	return vertices
+}
+
+func (g *WeightedGraph) getEdges(nodes map[GraphElement]map[GraphElement]int) []GraphEdge {
+	edges := make([]GraphEdge, 0)
+	addedEdges := make(map[GraphElement]map[GraphElement]bool)
+
+	for node := range nodes {
+		addedEdges[node] = make(map[GraphElement]bool)
+	}
+
+	for node, to := range nodes {
+		for neighbor, edgeWeight := range to {
+			add := true
+
+			ok1 := addedEdges[node][neighbor]
+			ok2 := addedEdges[neighbor][node]
+
+			if ok1 || ok2 {
+				add = false
+			}
+
+			if add {
+				addedEdges[node][neighbor] = true
+				addedEdges[neighbor][node] = true
+				edge := NewGraphEdge(node, neighbor, edgeWeight)
+				edges = append(edges, *edge)
+			}
+		}
+	}
+
+	return edges
+}
+
+type DisjointSet struct {
+	parent, rank map[GraphElement]GraphElement
+}
+
+func NewDisjointSet() *DisjointSet {
+	return &DisjointSet{parent: make(map[GraphElement]GraphElement), rank: make(map[GraphElement]GraphElement)}
+}
+
+func (ds *DisjointSet) MakeSet(node GraphElement) {
+	ds.parent[node] = node
+	ds.rank[node] = node
+}
+
+func (ds *DisjointSet) Find(node GraphElement) GraphElement {
+	if ds.parent[node] != node {
+		ds.parent[node] = ds.Find(ds.parent[node])
+	}
+	return ds.parent[node]
+}
+
+func (ds *DisjointSet) Union(node1, node2 GraphElement) {
+	root1 := ds.Find(node1)
+	root2 := ds.Find(node2)
+
+	if root1 != root2 {
+		if ds.rank[root1].Less(ds.rank[root2]) {
+			ds.parent[root1] = root2
+		} else if ds.rank[root2].Less(ds.rank[root1]) {
+			ds.parent[root2] = root1
+		} else {
+			ds.parent[root2] = root1
+			ds.rank[root1] = root1
+		}
+	}
+}
+
 func (g *WeightedGraph) Kruskal() int {
-	return 0
+	edges := g.getEdges(g.nodes)
+	vertices := g.getVertices(g.nodes)
+	ds := NewDisjointSet()
+	total := 0
+
+	for _, vertex := range vertices {
+		ds.MakeSet(vertex)
+	}
+
+	sort.Slice(edges, func(i, j int) bool {
+		return edges[i].weight < edges[j].weight
+	})
+
+	for _, edge := range edges {
+		srcRoot := ds.Find(edge.source)
+		destRoot := ds.Find(edge.destination)
+
+		if srcRoot != destRoot {
+			total += edge.weight
+			ds.Union(srcRoot, destRoot)
+		}
+	}
+
+	return total
 }

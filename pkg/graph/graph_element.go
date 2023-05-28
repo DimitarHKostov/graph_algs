@@ -27,3 +27,15 @@ func GetRandomGraphElement(nodes map[GraphElement]map[GraphElement]int) GraphEle
 
 	return keys[randomIndex]
 }
+
+func (ge GraphElement) Equals(other GraphElement) bool {
+	return ge.Id == other.Id
+}
+
+func (ge GraphElement) Less(other GraphElement) bool {
+	return ge.Id < other.Id
+}
+
+func (ge GraphElement) Greater(other GraphElement) bool {
+	return !ge.Less(other) && !ge.Equals(other)
+}
