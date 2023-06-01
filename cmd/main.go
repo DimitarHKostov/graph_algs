@@ -2,6 +2,7 @@ package main
 
 import (
 	"graph_algs/pkg/graph"
+	"graph_algs/pkg/str"
 	"log"
 )
 
@@ -40,7 +41,15 @@ func weightedGraphScenarios() {
 	log.Println(wg.Kruskal())
 }
 
+func strScenarios() {
+	s := "abcababcd"
+	substr := "bcdaa"
+
+	log.Println(str.RabinKarp(s, substr))
+}
+
 func main() {
 	//notWeigtedGraphScenarios()
-	weightedGraphScenarios()
+	//weightedGraphScenarios()
+	strScenarios()
 }
