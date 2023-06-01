@@ -43,9 +43,10 @@ func weightedGraphScenarios() {
 
 func strScenarios() {
 	s := "abcababcd"
-	substr := "bcdaa"
+	substr := "bcda"
 
-	log.Println(str.RabinKarp(s, substr))
+	//log.Println(str.RabinKarp(s, substr))
+	log.Println(str.KnuthMorrisPratt(s, substr))
 }
 
 func main() {

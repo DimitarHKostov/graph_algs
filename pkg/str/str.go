@@ -8,6 +8,60 @@ const (
 	domain = "abcdefgihj"
 )
 
+func KnuthMorrisPratt(str, substr string) bool {
+	n := len(str)
+	m := len(substr)
+	prefixTable := buildPrefixTable(substr)
+	result := make([]int, 0)
+
+	i, j := 0, 0
+
+	for i < n {
+		if substr[j] == str[i] {
+			i++
+			j++
+		}
+
+		if j == m {
+			result = append(result, i-j)
+			j = prefixTable[j-1]
+		} else if i < n && substr[j] != str[i] {
+			if j != 0 {
+				j = prefixTable[j-1]
+			} else {
+				i++
+			}
+		}
+	}
+
+	return len(result) > 0
+}
+
+func buildPrefixTable(substr string) []int {
+	m := len(substr)
+	prefixTable := make([]int, m)
+
+	j := 0
+	i := 1
+
+	for i < m {
+		if substr[i] == substr[j] {
+			j++
+			prefixTable[i] = j
+			i++
+		} else {
+			if j != 0 {
+				j = prefixTable[j-1]
+			} else {
+				prefixTable[i] = 0
+				i++
+			}
+		}
+	}
+
+	return prefixTable
+}
+
 func RabinKarp(str, substr string) bool {
 	lenStr := int64(len(str))
 	lenSubstr := int64(len(substr))
@@ -36,7 +90,7 @@ func RabinKarp(str, substr string) bool {
 	rightIndex := lenSubstr
 	leftIndex := 0
 
-	for {
+	for rightIndex != lenStr {
 		hashStr -= calculateHash(str[leftIndex], lenDomain, int64(lenSubstr-1))
 		hashStr *= int64(lenDomain)
 		hashStr += calculateHash(str[rightIndex], lenDomain, 0)
@@ -47,11 +101,9 @@ func RabinKarp(str, substr string) bool {
 		if hashStr == targetHash {
 			return true
 		}
-
-		if rightIndex == lenStr {
-			return false
-		}
 	}
+
+	return false
 
 	//either uncomment the for loop or the recursive solution
 	//return checkRecursive(hashStr, targetHash, int64(leftIndex), rightIndex, lenStr, lenSubstr, lenDomain, str, substr)
